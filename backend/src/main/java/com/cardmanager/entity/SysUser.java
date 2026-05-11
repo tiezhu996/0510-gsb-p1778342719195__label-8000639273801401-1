@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "sys_user", indexes = {
-        @Index(name = "idx_username", columnList = "username", unique = true)
+        @Index(name = "idx_username", columnList = "username, is_deleted", unique = true)
 })
 @SQLDelete(sql = "UPDATE sys_user SET is_deleted = 1 WHERE id = ?")
 @Where(clause = "is_deleted = 0")
@@ -20,7 +20,7 @@ public class SysUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", nullable = false, unique = true, length = 50)
+    @Column(name = "username", nullable = false, length = 50)
     private String username;
 
     @Column(name = "password", nullable = false, length = 100)
