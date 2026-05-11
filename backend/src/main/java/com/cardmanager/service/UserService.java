@@ -61,6 +61,10 @@ public class UserService {
                 user.setPassword(passwordEncoder.encode(request.getPassword()));
             }
         } else {
+            List<SysUser> deletedUsers = userRepository.findDeletedByUsername(request.getUsername());
+            for (SysUser deletedUser : deletedUsers) {
+                userRepository.permanentlyDeleteById(deletedUser.getId());
+            }
             if (userRepository.existsByUsername(request.getUsername())) {
                 throw new RuntimeException("用户名已存在");
             }
