@@ -76,7 +76,17 @@ public class UserService {
 
     @Transactional(rollbackFor = Exception.class)
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        SysUser user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("用户不存在"));
+        String originalUsername = user.getUsername();
+        
+        int affectedRows = userRepository.deleteUserAndReleaseUsername(id, System.currentTimeMillis());
+        if (affectedRows == 0) {
+            throw new RuntimeException("删除用户失败");
+        }
+        
+        if (userRepository.existsByUsername(originalUsername)) {
+            throw new RuntimeException("删除失败，用户名未释放");
+        }
     }
 
     public Page<SysUser> queryUsers(String username, String realName, String role, Integer page, Integer size) {
